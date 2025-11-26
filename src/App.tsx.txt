@@ -1,24 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { 
-  Dna, 
-  Brain, 
-  Bone, 
-  Activity, 
-  Play, 
-  Check, 
-  X, 
-  Trophy, 
-  Flame, 
-  Siren, 
-  Loader2,
-  RefreshCw,
-  Trash2,
-  Smile
-} from 'lucide-react';
+
+// Lucide-react import is verwijderd om deployment problemen op Vercel te voorkomen.
+// We gebruiken nu inline SVG's.
 
 // --- CONFIG & DATA ---
 // De apiKey variabele is nodig, maar wordt hier leeg gelaten.
-// De hosting service (Netlify/Vercel) zal deze negeren, maar je kunt de app lokaal testen.
+// De hosting service (Vercel) zal deze negeren, maar je kunt de app lokaal testen.
 const apiKey = ""; 
 
 const BONES = [
@@ -53,8 +40,32 @@ const MUSCLES = [
   { nl: "Armstrekker", la: "Triceps Brachii" }
 ];
 
+// --- INLINE SVG ICONEN (Ter vervanging van lucide-react import) ---
+
+const Icon = ({ name, size = 20, className = "" }) => {
+    const defaultProps = { width: size, height: size, strokeWidth: 2, className };
+
+    switch (name) {
+        case 'Bone': return <svg {...defaultProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M17 6c-3 0-5.3 3.6-7 5-1.7-1.4-4-5-7-5C1 6 1 10 1 12s0 6 4 6c3 0 5.3-3.6 7-5 1.7 1.4 4 5 7 5 4 0 4-4 4-6s0-6-4-6z"/></svg>;
+        case 'Activity': return <svg {...defaultProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>;
+        case 'Play': return <svg {...defaultProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>;
+        case 'Check': return <svg {...defaultProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>;
+        case 'X': return <svg {...defaultProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>;
+        case 'Trophy': return <svg {...defaultProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .5-.5 1-1 1H7s-1-.5-1-1v-2.34C6 11.85 8 10 12 10s6 1.85 6 4.66V17c0 .5-.5 1-1 1h-2s-1-.5-1-1v-2.34"/></svg>;
+        case 'Flame': return <svg {...defaultProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.5-.5-3.5-2-4.5M15 14.5A2.5 2.5 0 0 0 17.5 12c0-1.5-.5-3.5-2-4.5M11 2c-.5.5-1 1.5-1 2.5S10 7 11 8c.5 1 .5 2 0 3 .5 1 .5 2 0 3 .5 1 .5 2 0 3s-.5 2 0 3c0 .5.5 1 1 1.5M16.5 7c-1.5-1-1.5-2.5-1-4"/><path d="M18 10c-.5.5-1 1.5-1 2.5S17 15 18 16c.5 1 .5 2 0 3 .5 1 .5 2 0 3 .5 1 .5 2 0 3s-.5 2 0 3c0 .5.5 1 1 1.5"/></svg>;
+        case 'Siren': return <svg {...defaultProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M14 16c4.4 0 8-1.8 8-4s-3.6-4-8-4"/><path d="M10 16c-4.4 0-8-1.8-8-4s3.6-4 8-4"/><path d="M10 12h4"/><path d="M10 4V2"/><path d="M14 4V2"/><path d="M10 22V20"/><path d="M14 22V20"/></svg>;
+        case 'Loader2': return <svg {...defaultProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>;
+        case 'RefreshCw': return <svg {...defaultProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"/><path d="M21 13a9 9 0 1 1-3-7.7L18 8"/></svg>;
+        case 'Trash2': return <svg {...defaultProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M15 6V4c0-1-1-2-2-2h-2c-1 0-2 1-2 2v2"/></svg>;
+        case 'Smile': return <svg {...defaultProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></svg>;
+        default: return <svg {...defaultProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/></svg>; // Default to circle
+    }
+};
+
+
 // --- CONFETTI ENGINE (Custom Canvas) ---
 const ConfettiCanvas = ({ active, onClickTrigger }) => {
+// ... (code blijft hetzelfde)
   const canvasRef = useRef(null);
   const particles = useRef([]);
   const animationFrame = useRef();
@@ -396,9 +407,9 @@ const Sticker = ({ type, visible }) => {
     lava: "bg-red-600 text-white rotate-3 scale-125 animate-pulse border-4 border-yellow-300"
   };
   const icons = {
-    hot: <span className="flex items-center gap-1">HOT STREAK! <Flame size={20}/></span>,
-    super: <span className="flex items-center gap-1">SUPER HOT! <Flame size={20} fill="white"/><Flame size={20} fill="white"/></span>,
-    lava: <span className="flex items-center gap-1">LAVA HOT! <Siren size={24} className="animate-spin"/></span>
+    hot: <span className="flex items-center gap-1">HOT STREAK! <Icon name="Flame" size={20}/></span>,
+    super: <span className="flex items-center gap-1">SUPER HOT! <Icon name="Flame" size={20} fill="white"/><Icon name="Flame" size={20} fill="white"/></span>,
+    lava: <span className="flex items-center gap-1">LAVA HOT! <Icon name="Siren" size={24} className="animate-spin"/></span>
   };
   return (
     <div className={`absolute -top-4 -right-4 px-4 py-2 shadow-xl font-black rounded-lg transform transition-all duration-300 z-50 ${styles[type]}`}>
@@ -410,7 +421,7 @@ const Sticker = ({ type, visible }) => {
 const AchievementSticker = () => (
     <div className="absolute top-1/2 -right-4 transform -translate-y-1/2 rotate-12 bg-orange-400 text-white px-3 py-1 rounded-full shadow-lg border-2 border-white z-20 flex items-center gap-1 animate-in zoom-in">
         <span className="font-black text-xs uppercase">Behaald!</span>
-        <Smile size={16} fill="white" className="text-orange-500"/>
+        <Icon name="Smile" size={16} fill="white" className="text-orange-500"/>
     </div>
 );
 
@@ -698,7 +709,7 @@ export default function App() {
               <img src={logoUrl} alt="Logo" className={`w-32 h-32 object-cover rounded-full border-4 ${theme.border} shadow-lg transition-colors`} />
             ) : (
               <div className={`w-32 h-32 rounded-full ${theme.lightBg} flex items-center justify-center animate-pulse border-4 border-white`}>
-                <Loader2 className={`w-10 h-10 ${theme.text.replace('text-', 'text-opacity-50 ')} animate-spin`} />
+                <Icon name="Loader2" className={`w-10 h-10 ${theme.text.replace('text-', 'text-opacity-50 ')} animate-spin`} />
               </div>
             )}
           </div>
@@ -714,8 +725,8 @@ export default function App() {
             <div>
               <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Onderwerp</label>
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => setTopic('bones')} className={`p-3 rounded-xl font-bold border-2 transition-all ${topic === 'bones' ? `${theme.border} ${theme.lightBg} ${theme.text}` : 'border-gray-100 text-gray-400 hover:border-gray-200'}`}><div className="flex items-center justify-center gap-2"><Bone size={18}/> Botten</div></button>
-                <button onClick={() => setTopic('muscles')} className={`p-3 rounded-xl font-bold border-2 transition-all ${topic === 'muscles' ? `${theme.border} ${theme.lightBg} ${theme.text}` : 'border-gray-100 text-gray-400 hover:border-gray-200'}`}><div className="flex items-center justify-center gap-2"><Activity size={18}/> Spieren</div></button>
+                <button onClick={() => setTopic('bones')} className={`p-3 rounded-xl font-bold border-2 transition-all ${topic === 'bones' ? `${theme.border} ${theme.lightBg} ${theme.text}` : 'border-gray-100 text-gray-400 hover:border-gray-200'}`}><div className="flex items-center justify-center gap-2"><Icon name="Bone" size={18}/> Botten</div></button>
+                <button onClick={() => setTopic('muscles')} className={`p-3 rounded-xl font-bold border-2 transition-all ${topic === 'muscles' ? `${theme.border} ${theme.lightBg} ${theme.text}` : 'border-gray-100 text-gray-400 hover:border-gray-200'}`}><div className="flex items-center justify-center gap-2"><Icon name="Activity" size={18}/> Spieren</div></button>
               </div>
             </div>
 
@@ -764,7 +775,7 @@ export default function App() {
             onClick={startQuiz}
             className={`w-full mt-8 ${theme.button} text-white font-black text-lg py-4 rounded-xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 relative z-20`}
           >
-            START TRAINING <Play size={20} fill="white"/>
+            START TRAINING <Icon name="Play" size={20} fill="white"/>
           </button>
 
           {/* Reset Button (Only if all complete) */}
@@ -773,7 +784,7 @@ export default function App() {
                 onClick={resetProgress}
                 className="mt-4 text-gray-400 text-xs font-bold hover:text-red-500 flex items-center justify-center gap-1 mx-auto transition-colors z-20 relative"
               >
-                 <Trash2 size={12}/> BEGIN OPNIEUW
+                 <Icon name="Trash2" size={12}/> BEGIN OPNIEUW
               </button>
           )}
         </div>
@@ -808,7 +819,7 @@ export default function App() {
         <div className="w-full max-w-lg relative z-10">
           <div className="flex justify-between items-center mb-6 text-white font-bold">
             <div className="flex items-center gap-2"><span className="bg-white/20 px-3 py-1 rounded-full text-sm backdrop-blur-sm">V {currentIdx + 1}/{questions.length}</span></div>
-            <div className="flex items-center gap-2"><Trophy size={18} /> {score}</div>
+            <div className="flex items-center gap-2"><Icon name="Trophy" size={18} /> {score}</div>
           </div>
 
           <div className="bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-8 relative min-h-[400px] flex flex-col">
@@ -826,12 +837,12 @@ export default function App() {
                 <div className="text-center transform scale-110">
                   {showFeedback === 'correct' ? (
                     <>
-                      <Check className="w-20 h-20 text-green-600 mx-auto mb-2" strokeWidth={3} />
+                      <Icon name="Check" size={64} className="w-20 h-20 text-green-600 mx-auto mb-2" strokeWidth={3} />
                       <h3 className="text-3xl font-black text-green-800">GOED!</h3>
                     </>
                   ) : (
                     <>
-                      <X className="w-20 h-20 text-red-600 mx-auto mb-2" strokeWidth={3} />
+                      <Icon name="X" size={64} className="w-20 h-20 text-red-600 mx-auto mb-2" strokeWidth={3} />
                       <h3 className="text-3xl font-black text-red-800">FOUT!</h3>
                       <p className="text-red-700 font-bold mt-2">{(level === 'beginner' || level === 'specialist') ? currentQ.nl : currentQ.la}</p>
                     </>
@@ -874,7 +885,7 @@ export default function App() {
       <div className={`min-h-screen ${theme.bg} flex items-center justify-center p-4 transition-colors duration-500`}>
         <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center animate-in zoom-in duration-300">
           <div className={`mb-6 -mt-16 mx-auto bg-white rounded-full p-4 w-32 h-32 shadow-xl flex items-center justify-center border-8 ${theme.border.replace('border-', 'border-opacity-50 border-')}`}>
-            {passed ? <div className="bg-green-500 w-full h-full rounded-full flex items-center justify-center"><Check size={64} className="text-white" strokeWidth={4} /></div> : <div class="bg-red-500 w-full h-full rounded-full flex items-center justify-center"><X size={64} className="text-white" strokeWidth={4} /></div>}
+            {passed ? <div className="bg-green-500 w-full h-full rounded-full flex items-center justify-center"><Icon name="Check" size={64} className="text-white" strokeWidth={4} /></div> : <div class="bg-red-500 w-full h-full rounded-full flex items-center justify-center"><Icon name="X" size={64} className="text-white" strokeWidth={4} /></div>}
           </div>
           <h2 className="text-gray-400 font-bold uppercase tracking-widest text-sm mb-1">Resultaat</h2>
           <h1 className={`text-7xl font-black mb-2 ${passed ? 'text-green-600' : 'text-red-600'}`}>{grade}</h1>
@@ -889,7 +900,7 @@ export default function App() {
              <div className="bg-gray-50 p-3 rounded-lg"><span className="block text-xs text-gray-400 uppercase">Reeks</span>{streak} Max</div>
           </div>
           <button onClick={() => setScreen('setup')} className={`w-full ${theme.button} text-white font-black text-lg py-4 rounded-xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2`}>
-            <RefreshCw size={20}/> OPNIEUW
+            <Icon name="RefreshCw" size={20}/> OPNIEUW
           </button>
         </div>
       </div>
