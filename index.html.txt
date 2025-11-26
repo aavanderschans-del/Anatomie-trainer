@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anatomie Trainer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <!-- Dit is de plek waar de React-app wordt ingeladen -->
+    <div id="root"></div>
+    <!-- Het hoofdbestand dat de app start -->
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
